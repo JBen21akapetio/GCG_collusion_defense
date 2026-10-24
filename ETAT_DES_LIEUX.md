@@ -62,6 +62,20 @@ atteignent 0,60–0,99. Les formulations d'origine sont conservées comme condit
 
 ---
 
+## 1 bis. Lire les résultats
+
+`notebooks/01_resultats.ipynb` relit les CSV de `results/` et montre, figures à l'appui :
+le jeu et f(a_A), la collusion avant défense, la découverte sur les formulations, la
+trajectoire GCG, le résultat principal (train **et** held-out), la comparaison 1.5B/0.5B,
+l'étude de robustesse, et une table honnête de ce qui n'est pas démontré.
+
+```bash
+pip install notebook          # si besoin
+jupyter notebook notebooks/01_resultats.ipynb
+```
+
+Il n'exécute aucun calcul GPU et installe lui-même numpy/pandas/matplotlib s'ils manquent.
+
 ## 2. Ce qu'il vous reste à faire
 
 **Je ne lance plus rien.** Voici les commandes, dans l'ordre, avec durée et coût.

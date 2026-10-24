@@ -137,6 +137,7 @@ src/gcg_defense/
   sweep.py                  the episode grid shared by the launcher and the estimate
   robustness.py             suffix perturbations and cross-run comparison
   io_utils.py               logging, CSV, timers
+notebooks/01_resultats.ipynb  what has been demonstrated so far, with figures
 scripts/                    CLI entry points, scripts/modal_app.py (Modal episodes),
                             scripts/estimate_cost.py (benchmark -> cost table)
 tests/                      119 tests (15 of them need a model)
