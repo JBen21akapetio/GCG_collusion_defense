@@ -662,14 +662,21 @@ def _perturb(
 
 
 @app.function(volumes=VOLUMES, timeout=30 * 60)
-def _compare_suffixes(run_ids: str):
+def _compare_suffixes(run_ids: str, out_name: str = "suffix_comparison"):
     """Compare les suffixes de plusieurs runs (texte seul, pas de modèle)."""
+    from gcg_defense import io_utils
     from gcg_defense.robustness import compare_runs
 
     os.chdir("/root")
-    dirs = [f"results/{r.strip()}" for r in run_ids.split(",") if r.strip()]
-    text = compare_runs(dirs)
+    ids = [r.strip() for r in run_ids.split(",") if r.strip()]
+    text = compare_runs([f"results/{r}" for r in ids])
+    # Ecrit aussi un fichier : sans cela le resultat ne vivrait que dans les
+    # logs, qui disparaissent avec --detach.
+    path = f"results/{out_name}.txt"
+    io_utils.write_text(path, text + "\n")
+    results.commit()
     print(text, flush=True)
+    print(f"\n-> ecrit dans {path}", flush=True)
     return text
 
 
@@ -697,10 +704,15 @@ def perturb(
 
 
 @app.local_entrypoint()
-def compare_suffixes(run_ids: str, dry_run: bool = False):
+def compare_suffixes(
+    run_ids: str, out_name: str = "suffix_comparison", dry_run: bool = False
+):
     """Robustesse 2 et 3 : les suffixes de plusieurs runs se ressemblent-ils ?"""
-    print(f"plan: comparaison textuelle de {len(run_ids.split(','))} runs, CPU seul")
+    print(
+        f"plan: comparaison textuelle de {len(run_ids.split(','))} runs, CPU seul\n"
+        f"      -> results/{out_name}.txt dans le volume"
+    )
     if dry_run:
         print("--dry-run: rien n'a été lancé.")
         return
-    print(_compare_suffixes.remote(run_ids))
+    print(_compare_suffixes.remote(run_ids, out_name))
