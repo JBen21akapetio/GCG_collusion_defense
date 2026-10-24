@@ -9,7 +9,9 @@ __pycache__/
 
 # Résultats d'exécution : volumineux, binaires et régénérables.
 # Ils vivent dans le volume Modal `gcg-defense-results`.
-# Pour en partager un malgré tout :  git add -f results/<run_id>
+# Exception : le run de référence 20261024-133052_default_seed0 est versionné
+# (ajouté avec `git add -f`) pour que le résultat soit vérifiable sans Modal.
+# Pour en partager un autre :  git add -f results/<run_id>
 results/
 *.pt
 
