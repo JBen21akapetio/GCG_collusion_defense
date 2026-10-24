@@ -752,3 +752,55 @@ def explain(
         print("--dry-run: rien n'a été lancé.")
         return
     print(_explain.with_options(gpu=gpu).remote(run_id, config, overrides, suffix))
+
+
+@app.function(gpu=DEFAULT_GPU, volumes=VOLUMES, timeout=2 * 60 * 60, secrets=SECRETS)
+def _out_of_loop(
+    run_id: str,
+    config: str = "configs/default.yaml",
+    overrides: str = "",
+    suffix: str = "",
+    n_samples: int = 4,
+    skip_generation: bool = False,
+):
+    from gcg_defense.config import Config
+    from gcg_defense.out_of_loop import run_out_of_loop
+
+    os.chdir("/root")
+    if os.path.exists(f"results/{run_id}/config.yaml"):
+        config = f"results/{run_id}/config.yaml"
+    cfg = Config.load(config, _parse(overrides))
+    out = run_out_of_loop(
+        cfg, run_id=run_id, suffix_override=suffix or None,
+        n_samples=n_samples, skip_generation=skip_generation,
+    )
+    results.commit()
+    print(out["summary"], flush=True)
+    return {"run_dir": out["run_dir"], "summary": out["summary"]}
+
+
+@app.local_entrypoint()
+def out_of_loop(
+    run_id: str,
+    config: str = "configs/default.yaml",
+    overrides: str = "",
+    suffix: str = "",
+    n_samples: int = 4,
+    skip_generation: bool = False,
+    gpu: str = DEFAULT_GPU,
+    dry_run: bool = False,
+):
+    """Mesure le suffixe sur ce qu'il n'a PAS optimisé : décodage et génération."""
+    print(
+        f"plan: contrôles hors boucle pour {run_id} sur {gpu}\n"
+        "      décodage (6 températures) : post-traitement, gratuit\n"
+        f"      génération libre : 2 défenses x {n_samples} tirages x 192 prompts"
+        f"{' (DÉSACTIVÉE)' if skip_generation else ''}\n"
+        f"      ~{2 if skip_generation else 12} min, ~{0.10 if skip_generation else 0.45:.2f} $"
+    )
+    if dry_run:
+        print("--dry-run: rien n'a été lancé.")
+        return
+    print(_out_of_loop.with_options(gpu=gpu).remote(
+        run_id, config, overrides, suffix, n_samples, skip_generation
+    ))

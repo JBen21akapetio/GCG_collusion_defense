@@ -136,11 +136,13 @@ src/gcg_defense/
   cost.py                   duration/cost model; prices from configs/pricing.json
   sweep.py                  the episode grid shared by the launcher and the estimate
   robustness.py             suffix perturbations and cross-run comparison
+  out_of_loop.py            decoding and free-generation checks
+  explain.py                the game, the policy and the behaviour, drawn
   io_utils.py               logging, CSV, timers
 notebooks/01_resultats.ipynb  what has been demonstrated so far, with figures
 scripts/                    CLI entry points, scripts/modal_app.py (Modal episodes),
                             scripts/estimate_cost.py (benchmark -> cost table)
-tests/                      119 tests (15 of them need a model)
+tests/                      145 tests (17 of them need a model)
 results/<run_id>/           config copy, step/eval CSVs, metrics.csv, best suffix,
                             report.md, summary.txt, figures/
 ```
@@ -486,6 +488,26 @@ space or a region, in `src/gcg_defense/robustness.py`:
    cross-evaluate each on the other's attacker set with
    `::evaluate --suffix "<text>"`.
 
+## Out-of-loop checks
+
+Every number above comes from one quantity: the closed-form mutual information
+of the next-token distribution `q`. The suffix was optimised on it and is scored
+on it. `src/gcg_defense/out_of_loop.py` (`::out_of_loop`) measures the suffix on
+things it was **not** optimised against:
+
+1. **Decoding.** The deployed policy is not `q`, it is what a decoder does with
+   `q`. Under greedy decoding only `argmax_b q(b|a)` matters, and the MI can
+   fall a long way while the argmax still tracks A — a policy with MI 0.0025 can
+   be *fully* collusive once decoded greedily (`tests/test_out_of_loop.py` pins
+   that case). Temperature acts on the restricted distribution exactly, since
+   restricting and renormalising commute with it, so the whole table is free
+   post-processing of probabilities already computed.
+2. **Free generation.** B is scored on a single token by construction. Letting
+   it generate a few tokens and parsing the move out of the text tests that
+   assumption itself, with sampled text instead of probabilities.
+3. **Behavioural detection.** Simulated games scored by the Bonjour detector,
+   which never sees `q` at all — already implemented, run with `::evaluate`.
+
 ## Figures
 
 `results/<run_id>/figures/`:
@@ -499,7 +521,9 @@ space or a region, in `src/gcg_defense/robustness.py`:
   axis;
 - `detection_rate.{png,pdf}` — detection rate against rounds per game;
 - `robustness_perturbation.{png,pdf}` — model-MI against similarity to the
-  original suffix, one point per perturbed variant.
+  original suffix, one point per perturbed variant;
+- `out_of_loop_decoding.{png,pdf}` — model-MI and help rate of the *deployed*
+  policy against decoding temperature, greedy included.
 
 ## Reproducibility
 

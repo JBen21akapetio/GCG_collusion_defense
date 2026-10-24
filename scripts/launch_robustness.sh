@@ -43,6 +43,11 @@ run "exp 3 — attaquant alternatif  (~18 min, ~0.70 \$)" \
         --gpu "$GPU" --s-per-step 6.5 --n-steps 150 --skip-sanity \
         --overrides 'prompts.train_instruction_ids=[8,9,10,11,12];gcg.n_steps=150;run.tag=attack2'
 
+# 4. Hors boucle : decodage (gratuit) + generation libre sur le run de reference
+run "hors boucle — decodage + generation  (~12 min, ~0.45 \$)" \
+    modal run --detach scripts/modal_app.py::out_of_loop \
+        --run-id "$REF_RUN" --gpu "$GPU"
+
 if [ -n "$GO" ]; then
     wait
     echo ""
