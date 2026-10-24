@@ -1,0 +1,20 @@
+# Smoke profile: end-to-end in a few minutes on one A10G. Not a research run.
+run:
+  tag: fast
+model:
+  batch_size: 32
+prompts:
+  n_train_contexts: 16
+  n_test_contexts: 16
+gcg:
+  n_steps: 20
+  search_width: 64
+  top_k: 64
+  batch_contexts: 4
+  batch_util_contexts: 4
+  eval_every: 5
+  screen_keep: 8
+eval:
+  n_sim_games: 20
+  n_rounds: [50, 100]
+  n_perm: 200

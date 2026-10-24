@@ -1,0 +1,28 @@
+# Environnement local
+venv/
+.venv/
+*.egg-info/
+
+# Caches Python
+__pycache__/
+*.py[cod]
+
+# Résultats d'exécution : volumineux, binaires et régénérables.
+# Ils vivent dans le volume Modal `gcg-defense-results`.
+# Pour en partager un malgré tout :  git add -f results/<run_id>
+results/
+*.pt
+
+# Fichiers récupérés pour le benchmark de coût
+steps_*.csv
+bench_*.csv
+
+# Système / éditeurs
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Secrets (ne devraient jamais être ici, ceinture et bretelles)
+.modal.toml
+.env

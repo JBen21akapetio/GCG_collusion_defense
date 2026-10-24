@@ -1,0 +1,28 @@
+{
+  "_source": "https://modal.com/pricing",
+  "_fetched": "2026-10-24",
+  "_note": "Prices are per second, exactly as listed on the pricing page. The page names the A10G card 'Nvidia A10'; Modal's gpu= string for it is 'A10G'. Re-fetch before trusting an estimate: prices change.",
+  "gpu_per_second": {
+    "H100": 0.001097,
+    "A100-80GB": 0.000694,
+    "A100": 0.000583,
+    "A100-40GB": 0.000583,
+    "L40S": 0.000542,
+    "A10G": 0.000306,
+    "L4": 0.000222,
+    "T4": 0.000164
+  },
+  "cpu_per_core_second": 0.0000131,
+  "memory_per_gib_second": 0.00000222,
+  "_cpu_note": "A 'core' is a physical core (2 vCPU equivalent). Modal charges the resources a container requests; the defaults are small, so the GPU dominates.",
+  "gpu_memory_gib": {
+    "H100": 80,
+    "A100-80GB": 80,
+    "A100": 40,
+    "A100-40GB": 40,
+    "L40S": 48,
+    "A10G": 24,
+    "L4": 24,
+    "T4": 16
+  }
+}
