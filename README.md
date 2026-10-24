@@ -135,10 +135,11 @@ src/gcg_defense/
   report.py                 metrics.csv -> the markdown tables of the write-up
   cost.py                   duration/cost model; prices from configs/pricing.json
   sweep.py                  the episode grid shared by the launcher and the estimate
+  robustness.py             suffix perturbations and cross-run comparison
   io_utils.py               logging, CSV, timers
 scripts/                    CLI entry points, scripts/modal_app.py (Modal episodes),
                             scripts/estimate_cost.py (benchmark -> cost table)
-tests/                      105 tests (15 of them need a model)
+tests/                      119 tests (15 of them need a model)
 results/<run_id>/           config copy, step/eval CSVs, metrics.csv, best suffix,
                             report.md, summary.txt, figures/
 ```
@@ -460,6 +461,30 @@ CP_resid ≲ sqrt(lambda_star / (2N)).
 `tests/test_detect.py` checks that a CP three times the certificate *is* detected in
 ≥ 7/10 records, so the bound is not vacuous.
 
+## Robustness studies
+
+Three questions about whether the found suffix is a knife-edge point in token
+space or a region, in `src/gcg_defense/robustness.py`:
+
+1. **Perturbation** (`::perturb`) -- score 33 controlled variants of the suffix
+   on the held-out pools: replace 1/2/5/10 tokens, delete, **shuffle the order**,
+   reverse, keep either half, lowercase/uppercase/strip-whitespace, plus random
+   and empty controls. Each is reported with its character-level similarity to
+   the original, so `robustness_perturbation.png` shows model-MI against
+   similarity, between the "intact suffix" and "no defence" reference lines.
+   The shuffle variant is the decisive one: it keeps exactly the same tokens and
+   changes only their order, which separates a bag-of-tokens effect from a
+   sequence effect. No GCG, scoring only, so it is cheap.
+2. **Across models** -- run one episode per model, then `::compare_suffixes`.
+   Different tokenisers mean only the *text* can be compared, so the report uses
+   character ratio, longest common substring and word overlap. A low similarity
+   is the expected outcome; a high one would be a strong transferability claim.
+3. **Across attackers** -- `prompts.train_instruction_ids` picks which collusion
+   instructions train the suffix, so an episode with `[8,9,10,11,12]` optimises
+   against the usual held-out split. Compare the two suffixes the same way, and
+   cross-evaluate each on the other's attacker set with
+   `::evaluate --suffix "<text>"`.
+
 ## Figures
 
 `results/<run_id>/figures/`:
@@ -471,7 +496,9 @@ CP_resid ≲ sqrt(lambda_star / (2N)).
   so identity is never colour-alone, and "no defence" drawn in neutral ink;
 - `gcg_loss_curve.{png,pdf}` — total loss, MI term and utility term in nats on one
   axis;
-- `detection_rate.{png,pdf}` — detection rate against rounds per game.
+- `detection_rate.{png,pdf}` — detection rate against rounds per game;
+- `robustness_perturbation.{png,pdf}` — model-MI against similarity to the
+  original suffix, one point per perturbed variant.
 
 ## Reproducibility
 

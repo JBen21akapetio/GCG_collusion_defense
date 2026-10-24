@@ -32,6 +32,8 @@ prompts:
   n_train_contexts: 64
   n_test_contexts: 64
   n_train_instructions: 8   # remaining collusion instructions are held out
+  train_instruction_ids: null   # or an explicit list, e.g. [8,9,10,11,12] to
+                                # train on the usual test split (robustness exp. 3)
   suffix_position: system_end   # system_end | user_end
   conditions: [independent, colluding, info_no_intent, private_channel, colluding_implicit]
 
