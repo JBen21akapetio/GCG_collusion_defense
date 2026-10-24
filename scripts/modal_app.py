@@ -716,3 +716,39 @@ def compare_suffixes(
         print("--dry-run: rien n'a été lancé.")
         return
     print(_compare_suffixes.remote(run_ids, out_name))
+
+
+@app.function(gpu=DEFAULT_GPU, volumes=VOLUMES, timeout=60 * 60, secrets=SECRETS)
+def _explain(run_id: str, config: str = "configs/default.yaml", overrides: str = "", suffix: str = ""):
+    from gcg_defense.config import Config
+    from gcg_defense.explain import run_explain
+
+    os.chdir("/root")
+    if os.path.exists(f"results/{run_id}/config.yaml"):
+        config = f"results/{run_id}/config.yaml"
+    cfg = Config.load(config, _parse(overrides))
+    out = run_explain(cfg, run_id=run_id, suffix_override=suffix or None)
+    results.commit()
+    print(out["figures"], flush=True)
+    return {"run_dir": out["run_dir"], "figures": out["figures"]}
+
+
+@app.local_entrypoint()
+def explain(
+    run_id: str,
+    config: str = "configs/default.yaml",
+    overrides: str = "",
+    suffix: str = "",
+    gpu: str = DEFAULT_GPU,
+    dry_run: bool = False,
+):
+    """Figures pédagogiques : table de gains, matrices q, décomposition des coups."""
+    print(
+        f"plan: figures explicatives pour {run_id} sur {gpu}\n"
+        "      5 conditions x 2 defences x 192 prompts ~ 2 min, ~0.10 $\n"
+        "      -> game_payoff, q_matrices_*, move_decomposition_*"
+    )
+    if dry_run:
+        print("--dry-run: rien n'a été lancé.")
+        return
+    print(_explain.with_options(gpu=gpu).remote(run_id, config, overrides, suffix))

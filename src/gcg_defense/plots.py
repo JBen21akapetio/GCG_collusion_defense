@@ -452,9 +452,9 @@ def make_all(run_dir: str, cfg=None, extra_csvs: Sequence[str] = ()) -> List[str
 #: Perturbation families. Two hues plus neutral ink for the controls keeps the
 #: scatter within the all-pairs colour limit.
 PERTURBATION_FAMILIES = (
-    ("token", BLUE, "o", "perturbation de tokens"),
-    ("char", ORANGE, "s", "édition de caractères"),
-    ("control", INK_2, "D", "contrôle (aléatoire / vide)"),
+    ("token", BLUE, "o", "token perturbation"),
+    ("char", ORANGE, "s", "character edit"),
+    ("control", INK_2, "D", "control (random / empty)"),
 )
 
 _TOKEN_KINDS = ("replace", "delete", "shuffle", "reverse", "truncate")
@@ -512,7 +512,7 @@ def robustness_scatter(run_dir: str) -> List[str]:
         value = float(original["model_mi"].iloc[0])
         ax.axhline(value, color=BLUE, linewidth=1.6, zorder=2)
         ax.annotate(
-            f"suffixe intact ({value:.3f})",
+            f"intact suffix ({value:.3f})",
             (0.015, value),
             xycoords=("axes fraction", "data"),
             textcoords="offset points",
@@ -524,7 +524,7 @@ def robustness_scatter(run_dir: str) -> List[str]:
         value = float(none_row["model_mi"].iloc[0])
         ax.axhline(value, color=INK_3, linewidth=1.0, linestyle=(0, (4, 3)), zorder=2)
         ax.annotate(
-            f"aucune défense ({value:.3f})",
+            f"no defence ({value:.3f})",
             (0.015, value),
             xycoords=("axes fraction", "data"),
             textcoords="offset points",
@@ -534,9 +534,9 @@ def robustness_scatter(run_dir: str) -> List[str]:
         )
     _style(
         ax,
-        "ressemblance au suffixe original (caractères)",
-        "model-MI I(A;B | contexte) sur les contextes de test (nats)",
-        "Le suffixe est-il un point isolé ou une région ?",
+        "character similarity to the original suffix",
+        "model-MI I(A;B | context) on test contexts (nats)",
+        "Is the suffix an isolated point or a region?",
     )
     ax.legend(
         frameon=False,
@@ -550,8 +550,8 @@ def robustness_scatter(run_dir: str) -> List[str]:
     ax.text(
         0.0,
         -0.26,
-        "un point proche de la ligne bleue conserve la défense ; proche de la "
-        "ligne grise, il la détruit",
+        "a point near the blue line keeps the defence; near the grey line it "
+        "destroys it",
         transform=ax.transAxes,
         fontsize=8,
         color=INK_3,
