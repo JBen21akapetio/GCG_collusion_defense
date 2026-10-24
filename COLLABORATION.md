@@ -16,6 +16,9 @@ pip install modal && modal setup
 
 # éviter les commits de fusion parasites
 git config pull.rebase true
+
+# refuser les pushs directs sur main (hook local, voir §2)
+git config core.hooksPath .githooks
 ```
 
 `requirements.txt` ne sert que si vous exécutez le code sur votre propre GPU.
@@ -59,6 +62,27 @@ git fetch origin && git rebase origin/main
 Règle unique : **on ne pousse pas directement sur `main`**. Tout passe par une
 branche et une PR, même une correction d'une ligne. À deux, la relecture prend
 deux minutes et évite les écrasements.
+
+Cette règle est appliquée par un hook `pre-push` versionné dans `.githooks/`.
+Il faut l'activer une fois, sur chaque machine :
+
+```bash
+git config core.hooksPath .githooks
+```
+
+Un push vers `main` est alors refusé avec un rappel de la marche à suivre. En
+cas de besoin réel, le contournement est explicite et volontaire :
+
+```bash
+ALLOW_PUSH_MAIN=1 git push origin main
+```
+
+> GitHub n'applique pas cette règle côté serveur : la protection de branche et
+> les rulesets sont réservés aux dépôts publics ou aux comptes GitHub Pro. Le
+> hook est local, donc contournable — il protège de l'erreur de réflexe, pas
+> d'une action délibérée. C'est le bon niveau pour deux personnes qui se font
+> confiance. Pour une vraie protection serveur : passer le dépôt en public, ou
+> souscrire GitHub Pro.
 
 ---
 
