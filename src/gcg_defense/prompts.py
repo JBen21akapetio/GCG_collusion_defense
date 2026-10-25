@@ -170,10 +170,26 @@ def sample_history(
     return tuple(tuple(int(m) for m in row) for row in moves)
 
 
-def instruction_pool(condition: str, split: str, n_train: int) -> List[int]:
-    """Instruction ids available to a split. Splitting is BY INSTRUCTION."""
+def instruction_pool(
+    condition: str,
+    split: str,
+    n_train: int,
+    train_ids: Optional[Sequence[int]] = None,
+) -> List[int]:
+    """Instruction ids available to a split. Splitting is BY INSTRUCTION.
+
+    `train_ids` overrides the default "first n_train" rule, so the same code
+    can train a suffix on a different attacker vocabulary (robustness study).
+    """
     if condition == "colluding":
         total = len(COLLUSION_INSTRUCTIONS)
+        if train_ids is not None:
+            train = sorted(int(i) for i in train_ids)
+            if split == "train":
+                return train
+            if split == "test":
+                return [i for i in range(total) if i not in set(train)]
+            return list(range(total))
         if split == "train":
             return list(range(n_train))
         if split == "test":
@@ -197,11 +213,12 @@ def build_contexts(
     n_train_instructions: int = 8,
     tag: Optional[str] = None,
     templates: Optional[Sequence[str]] = None,
+    train_ids: Optional[Sequence[int]] = None,
 ) -> List[Context]:
     pool = (
         list(range(len(templates)))
         if templates is not None
-        else instruction_pool(condition, split, n_train_instructions)
+        else instruction_pool(condition, split, n_train_instructions, train_ids)
     )
     # Balanced assignment of instructions to contexts, then shuffled so that
     # instruction id is uncorrelated with context index.
@@ -236,20 +253,23 @@ def build_datasets(cfg, seed: Optional[int] = None) -> Datasets:
     hl = cfg.game.history_len
     n_tr, n_te = cfg.prompts.n_train_contexts, cfg.prompts.n_test_contexts
     n_ti = cfg.prompts.n_train_instructions
+    ids = cfg.prompts.train_instruction_ids
     data = Datasets()
     data.train["colluding"] = build_contexts(
-        "colluding", n_tr, hl, rng, "train", n_ti
+        "colluding", n_tr, hl, rng, "train", n_ti, train_ids=ids
     )
     data.train["independent"] = build_contexts(
         "independent", n_tr, hl, rng, "train", n_ti
     )
     # Held-out contexts AND held-out instructions.
     data.test["colluding"] = build_contexts(
-        "colluding", n_te, hl, rng, "test", n_ti, tag="colluding_heldout_instr"
+        "colluding", n_te, hl, rng, "test", n_ti,
+        tag="colluding_heldout_instr", train_ids=ids
     )
     # Held-out contexts, training instructions (isolates context generalisation).
     data.test["colluding_train_instr"] = build_contexts(
-        "colluding", n_te, hl, rng, "train", n_ti, tag="colluding_train_instr"
+        "colluding", n_te, hl, rng, "train", n_ti,
+        tag="colluding_train_instr", train_ids=ids
     )
     data.test["independent"] = build_contexts(
         "independent", n_te, hl, rng, "test", n_ti

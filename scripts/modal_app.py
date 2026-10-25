@@ -636,3 +636,171 @@ def bench_detect(n_perm: int = 1000, dry_run: bool = False):
         print("--dry-run: nothing was launched.")
         return
     print(_bench_detect.remote(n_perm))
+
+
+@app.function(gpu=DEFAULT_GPU, volumes=VOLUMES, timeout=2 * 60 * 60, secrets=SECRETS)
+def _perturb(
+    run_id: str,
+    config: str = "configs/default.yaml",
+    overrides: str = "",
+    suffix: str = "",
+    draws: int = 3,
+):
+    from gcg_defense.config import Config
+    from gcg_defense.robustness import run_perturbation_study
+
+    os.chdir("/root")
+    if os.path.exists(f"results/{run_id}/config.yaml"):
+        config = f"results/{run_id}/config.yaml"
+    cfg = Config.load(config, _parse(overrides))
+    out = run_perturbation_study(
+        cfg, run_id=run_id, suffix_override=suffix or None, draws=draws
+    )
+    results.commit()
+    print(out["summary"], flush=True)
+    return {"run_dir": out["run_dir"], "summary": out["summary"]}
+
+
+@app.function(volumes=VOLUMES, timeout=30 * 60)
+def _compare_suffixes(run_ids: str, out_name: str = "suffix_comparison"):
+    """Compare les suffixes de plusieurs runs (texte seul, pas de modèle)."""
+    from gcg_defense import io_utils
+    from gcg_defense.robustness import compare_runs
+
+    os.chdir("/root")
+    ids = [r.strip() for r in run_ids.split(",") if r.strip()]
+    text = compare_runs([f"results/{r}" for r in ids])
+    # Ecrit aussi un fichier : sans cela le resultat ne vivrait que dans les
+    # logs, qui disparaissent avec --detach.
+    path = f"results/{out_name}.txt"
+    io_utils.write_text(path, text + "\n")
+    results.commit()
+    print(text, flush=True)
+    print(f"\n-> ecrit dans {path}", flush=True)
+    return text
+
+
+@app.local_entrypoint()
+def perturb(
+    run_id: str,
+    config: str = "configs/default.yaml",
+    overrides: str = "",
+    suffix: str = "",
+    draws: int = 3,
+    gpu: str = DEFAULT_GPU,
+    dry_run: bool = False,
+):
+    """Robustesse 1 : le suffixe survit-il à de petites perturbations ?"""
+    n_variants = 1 + 4 * draws + 2 * draws + draws + 1 + 2 + 4 + draws + 1
+    print(
+        f"plan: ~{n_variants} variantes x 256 prompts sur {gpu}\n"
+        f"      run_id={run_id}, draws={draws}\n"
+        f"      ~{n_variants * 8 / 60:.0f} min, aucun GCG (scoring seulement)"
+    )
+    if dry_run:
+        print("--dry-run: rien n'a été lancé.")
+        return
+    print(_perturb.with_options(gpu=gpu).remote(run_id, config, overrides, suffix, draws))
+
+
+@app.local_entrypoint()
+def compare_suffixes(
+    run_ids: str, out_name: str = "suffix_comparison", dry_run: bool = False
+):
+    """Robustesse 2 et 3 : les suffixes de plusieurs runs se ressemblent-ils ?"""
+    print(
+        f"plan: comparaison textuelle de {len(run_ids.split(','))} runs, CPU seul\n"
+        f"      -> results/{out_name}.txt dans le volume"
+    )
+    if dry_run:
+        print("--dry-run: rien n'a été lancé.")
+        return
+    print(_compare_suffixes.remote(run_ids, out_name))
+
+
+@app.function(gpu=DEFAULT_GPU, volumes=VOLUMES, timeout=60 * 60, secrets=SECRETS)
+def _explain(run_id: str, config: str = "configs/default.yaml", overrides: str = "", suffix: str = ""):
+    from gcg_defense.config import Config
+    from gcg_defense.explain import run_explain
+
+    os.chdir("/root")
+    if os.path.exists(f"results/{run_id}/config.yaml"):
+        config = f"results/{run_id}/config.yaml"
+    cfg = Config.load(config, _parse(overrides))
+    out = run_explain(cfg, run_id=run_id, suffix_override=suffix or None)
+    results.commit()
+    print(out["figures"], flush=True)
+    return {"run_dir": out["run_dir"], "figures": out["figures"]}
+
+
+@app.local_entrypoint()
+def explain(
+    run_id: str,
+    config: str = "configs/default.yaml",
+    overrides: str = "",
+    suffix: str = "",
+    gpu: str = DEFAULT_GPU,
+    dry_run: bool = False,
+):
+    """Figures pédagogiques : table de gains, matrices q, décomposition des coups."""
+    print(
+        f"plan: figures explicatives pour {run_id} sur {gpu}\n"
+        "      5 conditions x 2 defences x 192 prompts ~ 2 min, ~0.10 $\n"
+        "      -> game_payoff, q_matrices_*, move_decomposition_*"
+    )
+    if dry_run:
+        print("--dry-run: rien n'a été lancé.")
+        return
+    print(_explain.with_options(gpu=gpu).remote(run_id, config, overrides, suffix))
+
+
+@app.function(gpu=DEFAULT_GPU, volumes=VOLUMES, timeout=2 * 60 * 60, secrets=SECRETS)
+def _out_of_loop(
+    run_id: str,
+    config: str = "configs/default.yaml",
+    overrides: str = "",
+    suffix: str = "",
+    n_samples: int = 4,
+    skip_generation: bool = False,
+):
+    from gcg_defense.config import Config
+    from gcg_defense.out_of_loop import run_out_of_loop
+
+    os.chdir("/root")
+    if os.path.exists(f"results/{run_id}/config.yaml"):
+        config = f"results/{run_id}/config.yaml"
+    cfg = Config.load(config, _parse(overrides))
+    out = run_out_of_loop(
+        cfg, run_id=run_id, suffix_override=suffix or None,
+        n_samples=n_samples, skip_generation=skip_generation,
+    )
+    results.commit()
+    print(out["summary"], flush=True)
+    return {"run_dir": out["run_dir"], "summary": out["summary"]}
+
+
+@app.local_entrypoint()
+def out_of_loop(
+    run_id: str,
+    config: str = "configs/default.yaml",
+    overrides: str = "",
+    suffix: str = "",
+    n_samples: int = 4,
+    skip_generation: bool = False,
+    gpu: str = DEFAULT_GPU,
+    dry_run: bool = False,
+):
+    """Mesure le suffixe sur ce qu'il n'a PAS optimisé : décodage et génération."""
+    print(
+        f"plan: contrôles hors boucle pour {run_id} sur {gpu}\n"
+        "      décodage (6 températures) : post-traitement, gratuit\n"
+        f"      génération libre : 2 défenses x {n_samples} tirages x 192 prompts"
+        f"{' (DÉSACTIVÉE)' if skip_generation else ''}\n"
+        f"      ~{2 if skip_generation else 12} min, ~{0.10 if skip_generation else 0.45:.2f} $"
+    )
+    if dry_run:
+        print("--dry-run: rien n'a été lancé.")
+        return
+    print(_out_of_loop.with_options(gpu=gpu).remote(
+        run_id, config, overrides, suffix, n_samples, skip_generation
+    ))

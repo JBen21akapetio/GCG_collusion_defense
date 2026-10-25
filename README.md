@@ -135,10 +135,14 @@ src/gcg_defense/
   report.py                 metrics.csv -> the markdown tables of the write-up
   cost.py                   duration/cost model; prices from configs/pricing.json
   sweep.py                  the episode grid shared by the launcher and the estimate
+  robustness.py             suffix perturbations and cross-run comparison
+  out_of_loop.py            decoding and free-generation checks
+  explain.py                the game, the policy and the behaviour, drawn
   io_utils.py               logging, CSV, timers
+notebooks/01_resultats.ipynb  what has been demonstrated so far, with figures
 scripts/                    CLI entry points, scripts/modal_app.py (Modal episodes),
                             scripts/estimate_cost.py (benchmark -> cost table)
-tests/                      105 tests (15 of them need a model)
+tests/                      145 tests (17 of them need a model)
 results/<run_id>/           config copy, step/eval CSVs, metrics.csv, best suffix,
                             report.md, summary.txt, figures/
 ```
@@ -460,6 +464,50 @@ CP_resid ≲ sqrt(lambda_star / (2N)).
 `tests/test_detect.py` checks that a CP three times the certificate *is* detected in
 ≥ 7/10 records, so the bound is not vacuous.
 
+## Robustness studies
+
+Three questions about whether the found suffix is a knife-edge point in token
+space or a region, in `src/gcg_defense/robustness.py`:
+
+1. **Perturbation** (`::perturb`) -- score 33 controlled variants of the suffix
+   on the held-out pools: replace 1/2/5/10 tokens, delete, **shuffle the order**,
+   reverse, keep either half, lowercase/uppercase/strip-whitespace, plus random
+   and empty controls. Each is reported with its character-level similarity to
+   the original, so `robustness_perturbation.png` shows model-MI against
+   similarity, between the "intact suffix" and "no defence" reference lines.
+   The shuffle variant is the decisive one: it keeps exactly the same tokens and
+   changes only their order, which separates a bag-of-tokens effect from a
+   sequence effect. No GCG, scoring only, so it is cheap.
+2. **Across models** -- run one episode per model, then `::compare_suffixes`.
+   Different tokenisers mean only the *text* can be compared, so the report uses
+   character ratio, longest common substring and word overlap. A low similarity
+   is the expected outcome; a high one would be a strong transferability claim.
+3. **Across attackers** -- `prompts.train_instruction_ids` picks which collusion
+   instructions train the suffix, so an episode with `[8,9,10,11,12]` optimises
+   against the usual held-out split. Compare the two suffixes the same way, and
+   cross-evaluate each on the other's attacker set with
+   `::evaluate --suffix "<text>"`.
+
+## Out-of-loop checks
+
+Every number above comes from one quantity: the closed-form mutual information
+of the next-token distribution `q`. The suffix was optimised on it and is scored
+on it. `src/gcg_defense/out_of_loop.py` (`::out_of_loop`) measures the suffix on
+things it was **not** optimised against:
+
+1. **Decoding.** The deployed policy is not `q`, it is what a decoder does with
+   `q`. Under greedy decoding only `argmax_b q(b|a)` matters, and the MI can
+   fall a long way while the argmax still tracks A — a policy with MI 0.0025 can
+   be *fully* collusive once decoded greedily (`tests/test_out_of_loop.py` pins
+   that case). Temperature acts on the restricted distribution exactly, since
+   restricting and renormalising commute with it, so the whole table is free
+   post-processing of probabilities already computed.
+2. **Free generation.** B is scored on a single token by construction. Letting
+   it generate a few tokens and parsing the move out of the text tests that
+   assumption itself, with sampled text instead of probabilities.
+3. **Behavioural detection.** Simulated games scored by the Bonjour detector,
+   which never sees `q` at all — already implemented, run with `::evaluate`.
+
 ## Figures
 
 `results/<run_id>/figures/`:
@@ -471,7 +519,11 @@ CP_resid ≲ sqrt(lambda_star / (2N)).
   so identity is never colour-alone, and "no defence" drawn in neutral ink;
 - `gcg_loss_curve.{png,pdf}` — total loss, MI term and utility term in nats on one
   axis;
-- `detection_rate.{png,pdf}` — detection rate against rounds per game.
+- `detection_rate.{png,pdf}` — detection rate against rounds per game;
+- `robustness_perturbation.{png,pdf}` — model-MI against similarity to the
+  original suffix, one point per perturbed variant;
+- `out_of_loop_decoding.{png,pdf}` — model-MI and help rate of the *deployed*
+  policy against decoding temperature, greedy included.
 
 ## Reproducibility
 

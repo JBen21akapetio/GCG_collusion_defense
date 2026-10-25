@@ -447,3 +447,174 @@ def make_all(run_dir: str, cfg=None, extra_csvs: Sequence[str] = ()) -> List[str
     if figures:
         log.info("wrote %d figure files to %s/figures", len(figures), run_dir)
     return figures
+
+
+#: Perturbation families. Two hues plus neutral ink for the controls keeps the
+#: scatter within the all-pairs colour limit.
+PERTURBATION_FAMILIES = (
+    ("token", BLUE, "o", "token perturbation"),
+    ("char", ORANGE, "s", "character edit"),
+    ("control", INK_2, "D", "control (random / empty)"),
+)
+
+_TOKEN_KINDS = ("replace", "delete", "shuffle", "reverse", "truncate")
+
+
+def perturbation_family(kind: str) -> str:
+    if kind in ("random", "none"):
+        return "control"
+    if kind == "char_edit":
+        return "char"
+    if any(kind.startswith(prefix) for prefix in _TOKEN_KINDS):
+        return "token"
+    return "control"
+
+
+def robustness_scatter(run_dir: str) -> List[str]:
+    """Model-MI against how close a perturbed suffix stays to the original."""
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    import pandas as pd
+
+    path = os.path.join(run_dir, "robustness_perturbation.csv")
+    if not os.path.exists(path):
+        return []
+    frame = pd.read_csv(path)
+    if frame.empty:
+        return []
+    original = frame[frame["kind"] == "original"]
+    none_row = frame[frame["kind"] == "none"]
+    body = frame[~frame["kind"].isin(["original"])].copy()
+    body["family"] = body["kind"].map(perturbation_family)
+
+    fig, ax = plt.subplots(figsize=(6.6, 4.6))
+    seen = set()
+    for family, colour, marker, label in PERTURBATION_FAMILIES:
+        rows = body[body["family"] == family]
+        if rows.empty:
+            continue
+        ax.scatter(
+            rows["char_ratio"],
+            rows["model_mi"],
+            s=62,
+            marker=marker,
+            facecolor=colour,
+            edgecolor="white",
+            linewidth=1.1,
+            alpha=0.9,
+            zorder=3,
+            label=label if label not in seen else None,
+        )
+        seen.add(label)
+    if not original.empty:
+        value = float(original["model_mi"].iloc[0])
+        ax.axhline(value, color=BLUE, linewidth=1.6, zorder=2)
+        ax.annotate(
+            f"intact suffix ({value:.3f})",
+            (0.015, value),
+            xycoords=("axes fraction", "data"),
+            textcoords="offset points",
+            xytext=(0, 6),
+            fontsize=8,
+            color=BLUE,
+        )
+    if not none_row.empty:
+        value = float(none_row["model_mi"].iloc[0])
+        ax.axhline(value, color=INK_3, linewidth=1.0, linestyle=(0, (4, 3)), zorder=2)
+        ax.annotate(
+            f"no defence ({value:.3f})",
+            (0.015, value),
+            xycoords=("axes fraction", "data"),
+            textcoords="offset points",
+            xytext=(0, -12),
+            fontsize=8,
+            color=INK_3,
+        )
+    _style(
+        ax,
+        "character similarity to the original suffix",
+        "model-MI I(A;B | context) on test contexts (nats)",
+        "Is the suffix an isolated point or a region?",
+    )
+    ax.legend(
+        frameon=False,
+        fontsize=9,
+        labelcolor=INK_2,
+        loc="upper center",
+        bbox_to_anchor=(0.5, -0.13),
+        ncol=3,
+        handletextpad=0.4,
+    )
+    ax.text(
+        0.0,
+        -0.26,
+        "a point near the blue line keeps the defence; near the grey line it "
+        "destroys it",
+        transform=ax.transAxes,
+        fontsize=8,
+        color=INK_3,
+    )
+    paths = _save(fig, run_dir, "robustness_perturbation")
+    plt.close(fig)
+    return paths
+
+
+def decoding_curve(run_dir: str) -> List[str]:
+    """Model-MI of the deployed policy against decoding temperature.
+
+    Two series only (no defence / GCG suffix), so the neutral ink carries the
+    reference and a single hue carries the defence.
+    """
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    import pandas as pd
+
+    path = os.path.join(run_dir, "out_of_loop_decoding.csv")
+    if not os.path.exists(path):
+        return []
+    frame = pd.read_csv(path)
+    if frame.empty:
+        return []
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10.4, 4.0))
+    styles = {"no defence": (INK_2, "D", (0, (5, 2))), "GCG suffix": (BLUE, "o", "-")}
+    for defence, group in frame.groupby("defence"):
+        colour, marker, dash = styles.get(str(defence), (AQUA, "s", "-"))
+        group = group.sort_values("temperature")
+        for ax, column, label in (
+            (ax1, "model_mi", "model-MI (nats)"),
+            (ax2, "help_rate", "help rate"),
+        ):
+            ax.plot(
+                group["temperature"], group[column], color=colour, marker=marker,
+                markersize=6, markeredgecolor="white", markeredgewidth=0.8,
+                linewidth=2.0, linestyle=dash, zorder=3, label=str(defence),
+            )
+    for ax, label, title in (
+        (ax1, "model-MI of the deployed policy (nats)", "Does the defence survive the decoder?"),
+        (ax2, "help rate of the deployed policy", "What B actually plays"),
+    ):
+        ax.axvline(0.0, color=INK_3, linewidth=0.9, linestyle=(0, (2, 3)), zorder=1)
+        ax.annotate(
+            "greedy", (0.0, ax.get_ylim()[1]), xytext=(4, -12),
+            textcoords="offset points", fontsize=8, color=INK_3,
+        )
+        _style(ax, "decoding temperature", label, title)
+    ax2.axhline(1 / 3, color=INK_3, linewidth=0.9, linestyle=(0, (4, 3)), zorder=1)
+    ax2.annotate(
+        "chance", (1.5, 1 / 3), xytext=(-4, 5), ha="right",
+        textcoords="offset points", fontsize=8, color=INK_3,
+    )
+    ax1.legend(frameon=False, fontsize=9, labelcolor=INK_2, loc="upper left")
+    fig.text(
+        0.0, -0.04,
+        "T = 1 is the distribution the suffix was optimised on; every other point "
+        "is out of that loop.",
+        fontsize=8, color=INK_3,
+    )
+    paths = _save(fig, run_dir, "out_of_loop_decoding")
+    plt.close(fig)
+    return paths

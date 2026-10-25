@@ -54,6 +54,10 @@ class PromptConfig:
     n_train_contexts: int = 64
     n_test_contexts: int = 64
     n_train_instructions: int = 8
+    #: Explicit list of collusion-instruction ids to train on. None keeps the
+    #: default "first n_train_instructions"; the test split is the complement.
+    #: Set it to re-run GCG on a different attacker vocabulary.
+    train_instruction_ids: Optional[List[int]] = None
     suffix_position: str = "system_end"
     conditions: List[str] = field(
         default_factory=lambda: [
