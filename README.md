@@ -43,7 +43,7 @@ What else holds:
 **Not demonstrated yet:** several seeds, behavioural detection in simulated games, transfer
 across models, robustness to an adaptive attacker. Collusion here is *instructed*, with
 scripted partners. Emergent collusion between three LLMs is studied in the companion
-repository [`gcg-collusion-llm-agents`](https://github.com/JBen21akapetio/gcg-collusion-llm-agents).
+repository [`GCG_collusion_LLMsagents`](https://github.com/JBen21akapetio/GCG_collusion_LLMsagents).
 
 ## Repository
 

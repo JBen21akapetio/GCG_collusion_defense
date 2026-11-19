@@ -26,7 +26,7 @@ model that is ever run forward or backward.
 
 **Companion project.** The same question in an emergent, three-LLM setting (Qwen2.5-32B,
 GLM-4-32B, Mixtral-8x7B with a private channel) is studied in
-[`gcg-collusion-llm-agents`](https://github.com/JBen21akapetio/gcg-collusion-llm-agents).
+[`GCG_collusion_LLMsagents`](https://github.com/JBen21akapetio/GCG_collusion_LLMsagents).
 
 ## Key results (Qwen2.5-1.5B, seed 0)
 
