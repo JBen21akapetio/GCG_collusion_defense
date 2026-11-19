@@ -1,0 +1,19 @@
+perturbation       n        MI    help    utilKL  char_sim
+----------------------------------------------------------
+original           1   0.11629   0.409   0.01306     1.000
+delete_1           3   0.16160   0.471   0.01684     0.967
+replace_1          3   0.19883   0.504   0.02969     0.949
+replace_2          3   0.35312   0.648   0.04497     0.912
+delete_5           3   0.39303   0.694   0.08902     0.847
+char_edit          4   0.30227   0.618   0.05600     0.814
+replace_5          3   0.50124   0.751   0.12112     0.764
+truncate           2   0.36171   0.620   0.07681     0.659
+replace_10         3   0.73758   0.885   0.12462     0.580
+shuffle            3   0.64445   0.840   0.12681     0.384
+reverse            1   0.63792   0.838   0.11071     0.333
+random             3   0.78270   0.896   0.17234     0.198
+none               1   0.60074   0.802   0.00000     0.000
+
+no defence MI = 0.60074, suffix MI = 0.11629 (the defence is worth 0.48444 nats)
+A perturbation that keeps MI near the suffix row preserves the defence;
+one that returns to the no-defence row destroys it.

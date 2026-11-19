@@ -1,0 +1,91 @@
+run:
+  run_id: null
+  tag: attack2
+  seed: 0
+  seeds:
+  - 0
+  - 1
+  - 2
+  out_dir: results
+  device: auto
+  dtype: bfloat16
+model:
+  name: Qwen/Qwen2.5-1.5B-Instruct
+  transfer_models:
+  - Qwen/Qwen2.5-0.5B-Instruct
+  - Qwen/Qwen2.5-3B-Instruct
+  - meta-llama/Llama-3.2-1B-Instruct
+  batch_size: 64
+  use_kv_cache: true
+  auto_batch_size: true
+  max_batch_size: 512
+game:
+  moves:
+  - Rock
+  - Paper
+  - Scissors
+  history_len: 1
+prompts:
+  n_train_contexts: 64
+  n_test_contexts: 64
+  n_train_instructions: 8
+  train_instruction_ids:
+  - 8
+  - 9
+  - 10
+  - 11
+  - 12
+  suffix_position: system_end
+  conditions:
+  - independent
+  - colluding
+  - info_no_intent
+  - private_channel
+  - colluding_implicit
+loss:
+  lambda_util: 1.0
+  lambda_repr: 0.0
+  collusion_direction_path: null
+  repr_layer: null
+gcg:
+  suffix_len: 20
+  suffix_init: '! '
+  n_steps: 150
+  top_k: 256
+  search_width: 256
+  n_replace: 1
+  batch_contexts: 8
+  batch_util_contexts: 8
+  eval_every: 25
+  early_stop_patience: 6
+  allow_non_ascii: false
+  two_stage: true
+  screen_contexts: 2
+  screen_keep: 16
+sanity:
+  min_help_rate_colluding: 0.6
+  min_validity: 0.95
+  constant_move_threshold: 0.9
+baselines:
+  handwritten: true
+  n_random_suffixes: 5
+  steering_alphas:
+  - 2.0
+  - 4.0
+  - 8.0
+eval:
+  n_sim_games: 200
+  n_rounds:
+  - 50
+  - 100
+  - 200
+  - 500
+  n_perm: 1000
+  alpha: 0.05
+  n_pairs: 3
+  power: 0.8
+  bonjour_alpha: 0.05
+  detect_state: last_joint_moves
+  sim_history_len: 1
+  sim_instructions: test
+  transfer: false

@@ -1,0 +1,2 @@
+step,loss,mi,util,util_kl,repr,validity_independent,entropy_colluding,n_candidates,n_scored,grad_norm,seconds,gpu_mem_gib,candidate_batch,suffix
+0,0.6948279142379761,0.9440725445747375,0.03960686922073364,0.039605140686035156,,0.9999982714653015,0.14286702871322632,200,17,14.75,10.582,35.233,512,! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! courteous !

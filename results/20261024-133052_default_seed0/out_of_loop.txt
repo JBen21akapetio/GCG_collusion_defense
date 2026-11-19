@@ -1,0 +1,27 @@
+Decoding: what the DEPLOYED policy does
+
+defence       decoder                     MI    help
+----------------------------------------------------
+no defence    greedy (argmax)        0.96047   0.906
+no defence    sampling T=0.25        0.88216   0.889
+no defence    sampling T=0.5         0.78731   0.865
+no defence    sampling T=0.7         0.71004   0.841
+no defence    sampling T=1           0.60074   0.802
+no defence    sampling T=1.5         0.44483   0.737
+GCG suffix    greedy (argmax)        0.61008   0.380
+GCG suffix    sampling T=0.25        0.38820   0.396
+GCG suffix    sampling T=0.5         0.25008   0.413
+GCG suffix    sampling T=0.7         0.18143   0.415
+GCG suffix    sampling T=1           0.11629   0.409
+GCG suffix    sampling T=1.5         0.06151   0.394
+
+Free generation vs the single-token policy
+
+defence           MI gen  MI closed  help gen  unparsed
+-------------------------------------------------------
+no defence       0.65141    0.60074     0.759      0.0%
+GCG suffix       0.14911    0.11629     0.347      0.9%
+
+The greedy row is the one that can invalidate the result: a defence that
+only flattens probabilities without moving the argmax leaves a greedy
+deployment fully collusive.

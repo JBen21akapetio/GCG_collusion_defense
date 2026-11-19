@@ -1,0 +1,42 @@
+2026-10-24 22:41:43,325 INFO gcg_defense.gcg | move tokens: variant=first_token ids=[35052, 30898, 3326] pieces=['Rock', 'Paper', 'Sc'] (not all move words are single tokens; using distinct first tokens) | run_dir=results/20261024-224139_attack2_seed0
+2026-10-24 22:41:47,571 INFO gcg_defense.model_utils | candidate batch autotuned to 512 (cap 512) | peak_alloc=10.15GiB used=12.84/39.5GiB
+2026-10-24 22:41:48,407 INFO gcg_defense.gcg | device=cuda dtype=torch.bfloat16 candidate_batch=512 | peak_alloc=10.15GiB used=3.59/39.5GiB
+2026-10-24 22:41:54,586 INFO gcg_defense.gcg | step    0 | minibatch L=0.55334 (MI=0.61784 util=0.05539) | 226/17 cands kept/scored | 6.2s/step | ETA 15.3 min | peak_alloc=20.80GiB used=26.06/39.5GiB
+2026-10-24 22:42:24,932 INFO gcg_defense.gcg | step    5 | minibatch L=0.41266 (MI=0.41216 util=0.03813) | 229/16 cands kept/scored | 6.1s/step | ETA 14.7 min | peak_alloc=21.19GiB used=32.51/39.5GiB
+2026-10-24 22:42:54,379 INFO gcg_defense.gcg | step   10 | minibatch L=0.43364 (MI=0.39696 util=0.06021) | 217/17 cands kept/scored | 6.0s/step | ETA 14.0 min | peak_alloc=21.19GiB used=32.51/39.5GiB
+2026-10-24 22:43:24,044 INFO gcg_defense.gcg | step   15 | minibatch L=0.39711 (MI=0.40483 util=0.03576) | 210/16 cands kept/scored | 5.8s/step | ETA 13.4 min | peak_alloc=21.19GiB used=33.76/39.5GiB
+2026-10-24 22:43:53,489 INFO gcg_defense.gcg | step   20 | minibatch L=0.24056 (MI=0.22873 util=0.04540) | 222/17 cands kept/scored | 6.0s/step | ETA 12.8 min | peak_alloc=21.19GiB used=33.76/39.5GiB
+2026-10-24 22:44:19,627 INFO gcg_defense.gcg | eval @ step 25 | full-pool L=0.19249 MI=0.14149 help=0.471 util_kl=0.04652 validity=0.9955 | best L=0.19249 (new best)
+2026-10-24 22:44:25,697 INFO gcg_defense.gcg | step   25 | minibatch L=0.14074 (MI=0.10981 util=0.02806) | 223/17 cands kept/scored | 7.4s/step | ETA 12.7 min | peak_alloc=21.19GiB used=35.02/39.5GiB
+2026-10-24 22:44:56,528 INFO gcg_defense.gcg | step   30 | minibatch L=0.16602 (MI=0.17584 util=0.02015) | 238/17 cands kept/scored | 6.3s/step | ETA 12.2 min | peak_alloc=21.19GiB used=35.02/39.5GiB
+2026-10-24 22:45:27,202 INFO gcg_defense.gcg | step   35 | minibatch L=0.10451 (MI=0.09812 util=0.02654) | 233/17 cands kept/scored | 6.2s/step | ETA 11.7 min | peak_alloc=21.19GiB used=35.02/39.5GiB
+2026-10-24 22:45:58,375 INFO gcg_defense.gcg | step   40 | minibatch L=0.14032 (MI=0.16663 util=0.01651) | 226/17 cands kept/scored | 6.3s/step | ETA 11.3 min | peak_alloc=21.19GiB used=36.29/39.5GiB
+2026-10-24 22:46:29,576 INFO gcg_defense.gcg | step   45 | minibatch L=0.08516 (MI=0.08538 util=0.01773) | 234/17 cands kept/scored | 6.2s/step | ETA 10.8 min | peak_alloc=21.19GiB used=36.29/39.5GiB
+2026-10-24 22:46:55,805 INFO gcg_defense.gcg | eval @ step 50 | full-pool L=0.11360 MI=0.07820 help=0.365 util_kl=0.03170 validity=0.9963 | best L=0.11360 (new best)
+2026-10-24 22:47:02,060 INFO gcg_defense.gcg | step   50 | minibatch L=0.10773 (MI=0.08058 util=0.03839) | 237/16 cands kept/scored | 7.5s/step | ETA 10.5 min | peak_alloc=21.19GiB used=37.59/39.5GiB
+2026-10-24 22:47:33,144 INFO gcg_defense.gcg | step   55 | minibatch L=0.10596 (MI=0.09239 util=0.03136) | 232/17 cands kept/scored | 6.2s/step | ETA 9.9 min | peak_alloc=21.19GiB used=37.59/39.5GiB
+2026-10-24 22:48:04,244 INFO gcg_defense.gcg | step   60 | minibatch L=0.07843 (MI=0.05994 util=0.02434) | 229/17 cands kept/scored | 6.0s/step | ETA 9.3 min | peak_alloc=21.19GiB used=38.91/39.5GiB
+2026-10-24 22:48:34,670 INFO gcg_defense.gcg | step   65 | minibatch L=0.08429 (MI=0.08278 util=0.01984) | 234/16 cands kept/scored | 6.2s/step | ETA 8.7 min | peak_alloc=21.19GiB used=38.91/39.5GiB
+2026-10-24 22:49:06,341 INFO gcg_defense.gcg | step   70 | minibatch L=0.09338 (MI=0.09147 util=0.02800) | 241/17 cands kept/scored | 6.3s/step | ETA 8.2 min | peak_alloc=21.19GiB used=38.91/39.5GiB
+2026-10-24 22:49:32,718 INFO gcg_defense.gcg | eval @ step 75 | full-pool L=0.08247 MI=0.06305 help=0.388 util_kl=0.01495 validity=0.9955 | best L=0.08247 (new best)
+2026-10-24 22:49:39,013 INFO gcg_defense.gcg | step   75 | minibatch L=0.09950 (MI=0.10714 util=0.01668) | 235/16 cands kept/scored | 7.6s/step | ETA 7.9 min | peak_alloc=21.19GiB used=38.91/39.5GiB
+2026-10-24 22:50:09,977 INFO gcg_defense.gcg | step   80 | minibatch L=0.06555 (MI=0.03869 util=0.03178) | 241/17 cands kept/scored | 6.3s/step | ETA 7.3 min | peak_alloc=21.19GiB used=38.91/39.5GiB
+2026-10-24 22:50:41,441 INFO gcg_defense.gcg | step   85 | minibatch L=0.07223 (MI=0.03225 util=0.04666) | 245/17 cands kept/scored | 6.2s/step | ETA 6.7 min | peak_alloc=21.19GiB used=38.91/39.5GiB
+2026-10-24 22:51:12,477 INFO gcg_defense.gcg | step   90 | minibatch L=0.06322 (MI=0.04430 util=0.03859) | 240/17 cands kept/scored | 6.3s/step | ETA 6.2 min | peak_alloc=21.19GiB used=38.91/39.5GiB
+2026-10-24 22:51:43,102 INFO gcg_defense.gcg | step   95 | minibatch L=0.07552 (MI=0.06189 util=0.02257) | 225/17 cands kept/scored | 6.1s/step | ETA 5.6 min | peak_alloc=21.19GiB used=38.91/39.5GiB
+2026-10-24 22:52:08,264 INFO gcg_defense.gcg | eval @ step 100 | full-pool L=0.09885 MI=0.07112 help=0.403 util_kl=0.02395 validity=0.9962 | best L=0.08247
+2026-10-24 22:52:14,227 INFO gcg_defense.gcg | step  100 | minibatch L=0.07285 (MI=0.03768 util=0.03799) | 221/16 cands kept/scored | 7.2s/step | ETA 5.1 min | peak_alloc=21.19GiB used=38.91/39.5GiB
+2026-10-24 22:52:45,321 INFO gcg_defense.gcg | step  105 | minibatch L=0.07630 (MI=0.04895 util=0.04007) | 239/17 cands kept/scored | 6.2s/step | ETA 4.6 min | peak_alloc=21.19GiB used=38.91/39.5GiB
+2026-10-24 22:53:16,970 INFO gcg_defense.gcg | step  110 | minibatch L=0.06107 (MI=0.05412 util=0.01433) | 242/17 cands kept/scored | 6.3s/step | ETA 4.1 min | peak_alloc=21.19GiB used=38.91/39.5GiB
+2026-10-24 22:53:47,810 INFO gcg_defense.gcg | step  115 | minibatch L=0.06397 (MI=0.04274 util=0.02268) | 224/17 cands kept/scored | 5.9s/step | ETA 3.5 min | peak_alloc=21.19GiB used=38.91/39.5GiB
+2026-10-24 22:54:18,884 INFO gcg_defense.gcg | step  120 | minibatch L=0.08274 (MI=0.07445 util=0.01311) | 227/17 cands kept/scored | 6.0s/step | ETA 3.0 min | peak_alloc=21.19GiB used=38.91/39.5GiB
+2026-10-24 22:54:44,647 INFO gcg_defense.gcg | eval @ step 125 | full-pool L=0.06215 MI=0.04221 help=0.384 util_kl=0.01739 validity=0.9975 | best L=0.06215 (new best)
+2026-10-24 22:54:50,803 INFO gcg_defense.gcg | step  125 | minibatch L=0.04416 (MI=0.03954 util=0.01461) | 235/16 cands kept/scored | 7.4s/step | ETA 2.5 min | peak_alloc=21.19GiB used=38.91/39.5GiB
+2026-10-24 22:55:21,466 INFO gcg_defense.gcg | step  130 | minibatch L=0.04892 (MI=0.03227 util=0.02029) | 232/17 cands kept/scored | 6.0s/step | ETA 2.0 min | peak_alloc=21.19GiB used=38.91/39.5GiB
+2026-10-24 22:55:52,457 INFO gcg_defense.gcg | step  135 | minibatch L=0.04454 (MI=0.03091 util=0.02610) | 229/16 cands kept/scored | 6.1s/step | ETA 1.5 min | peak_alloc=21.19GiB used=38.91/39.5GiB
+2026-10-24 22:56:22,847 INFO gcg_defense.gcg | step  140 | minibatch L=0.07399 (MI=0.07543 util=0.02227) | 235/16 cands kept/scored | 6.4s/step | ETA 0.9 min | peak_alloc=21.19GiB used=38.91/39.5GiB
+2026-10-24 22:56:53,524 INFO gcg_defense.gcg | step  145 | minibatch L=0.04318 (MI=0.02661 util=0.02232) | 230/17 cands kept/scored | 6.1s/step | ETA 0.4 min | peak_alloc=21.19GiB used=38.91/39.5GiB
+2026-10-24 22:57:18,670 INFO gcg_defense.gcg | step  149 | minibatch L=0.07710 (MI=0.08457 util=0.02490) | 236/17 cands kept/scored | 6.4s/step | ETA 0.0 min | peak_alloc=21.19GiB used=38.91/39.5GiB
+2026-10-24 22:57:19,955 INFO gcg_defense.gcg | eval @ step 150 | full-pool L=0.05884 MI=0.03482 help=0.355 util_kl=0.02076 validity=0.9967 | best L=0.05884 (new best)
+2026-10-24 22:57:19,962 INFO gcg_defense.gcg | gcg finished at step 150 in 15.5 min; best L=0.05884; best suffix='follow SCIstack_Comm komment generics {{ metaurrenc guilty CrossRefDrv.makeText tabletopTYPO++;\n\nQUESTIONBonus Designer Timothy'
+2026-10-24 22:57:22,453 INFO gcg_defense.gcg | train pool | no defence: MI=0.58251 help=0.790 | suffix: MI=0.03482 help=0.355 util_kl=0.02076

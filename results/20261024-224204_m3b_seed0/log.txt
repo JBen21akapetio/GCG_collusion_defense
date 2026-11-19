@@ -1,0 +1,42 @@
+2026-10-24 22:42:12,326 INFO gcg_defense.gcg | move tokens: variant=first_token ids=[35052, 30898, 3326] pieces=['Rock', 'Paper', 'Sc'] (not all move words are single tokens; using distinct first tokens) | run_dir=results/20261024-224204_m3b_seed0
+2026-10-24 22:42:17,281 INFO gcg_defense.model_utils | candidate batch autotuned to 256 (cap 256) | peak_alloc=10.58GiB used=12.12/39.5GiB
+2026-10-24 22:42:17,944 INFO gcg_defense.gcg | device=cuda dtype=torch.bfloat16 candidate_batch=256 | peak_alloc=10.58GiB used=6.52/39.5GiB
+2026-10-24 22:42:28,946 INFO gcg_defense.gcg | step    0 | minibatch L=0.69483 (MI=0.94407 util=0.03961) | 200/17 cands kept/scored | 11.0s/step | ETA 27.3 min | peak_alloc=35.23GiB used=12.07/39.5GiB
+2026-10-24 22:43:26,710 INFO gcg_defense.gcg | step    5 | minibatch L=0.68051 (MI=0.68527 util=0.02118) | 232/16 cands kept/scored | 11.1s/step | ETA 26.9 min | peak_alloc=35.61GiB used=38.80/39.5GiB
+2026-10-24 22:44:21,826 INFO gcg_defense.gcg | step   10 | minibatch L=0.49243 (MI=0.44033 util=0.04231) | 218/17 cands kept/scored | 10.9s/step | ETA 25.8 min | peak_alloc=35.61GiB used=38.80/39.5GiB
+2026-10-24 22:45:17,337 INFO gcg_defense.gcg | step   15 | minibatch L=0.75463 (MI=0.72394 util=0.03612) | 219/17 cands kept/scored | 10.9s/step | ETA 24.8 min | peak_alloc=35.61GiB used=38.80/39.5GiB
+2026-10-24 22:46:10,187 INFO gcg_defense.gcg | step   20 | minibatch L=0.67900 (MI=0.65081 util=0.04564) | 214/16 cands kept/scored | 10.4s/step | ETA 23.4 min | peak_alloc=35.61GiB used=38.80/39.5GiB
+2026-10-24 22:46:55,970 INFO gcg_defense.gcg | eval @ step 25 | full-pool L=0.67238 MI=0.64438 help=0.712 util_kl=0.02800 validity=1.0000 | best L=0.67238 (new best)
+2026-10-24 22:47:06,856 INFO gcg_defense.gcg | step   25 | minibatch L=0.54609 (MI=0.51027 util=0.03943) | 215/17 cands kept/scored | 13.3s/step | ETA 23.0 min | peak_alloc=35.61GiB used=38.80/39.5GiB
+2026-10-24 22:48:01,670 INFO gcg_defense.gcg | step   30 | minibatch L=0.57921 (MI=0.56393 util=0.03130) | 227/17 cands kept/scored | 11.2s/step | ETA 21.9 min | peak_alloc=35.61GiB used=38.80/39.5GiB
+2026-10-24 22:48:57,346 INFO gcg_defense.gcg | step   35 | minibatch L=0.91529 (MI=0.92081 util=0.01034) | 217/16 cands kept/scored | 10.7s/step | ETA 21.1 min | peak_alloc=35.61GiB used=38.89/39.5GiB
+2026-10-24 22:49:53,780 INFO gcg_defense.gcg | step   40 | minibatch L=0.59042 (MI=0.57123 util=0.01405) | 231/16 cands kept/scored | 11.1s/step | ETA 20.3 min | peak_alloc=35.61GiB used=37.37/39.5GiB
+2026-10-24 22:50:48,902 INFO gcg_defense.gcg | step   45 | minibatch L=0.71497 (MI=0.69293 util=0.04539) | 209/17 cands kept/scored | 10.8s/step | ETA 19.2 min | peak_alloc=35.61GiB used=37.37/39.5GiB
+2026-10-24 22:51:35,856 INFO gcg_defense.gcg | eval @ step 50 | full-pool L=0.68305 MI=0.63984 help=0.739 util_kl=0.04321 validity=1.0000 | best L=0.67238
+2026-10-24 22:51:47,086 INFO gcg_defense.gcg | step   50 | minibatch L=0.75394 (MI=0.69926 util=0.03421) | 224/17 cands kept/scored | 13.7s/step | ETA 18.7 min | peak_alloc=35.61GiB used=37.37/39.5GiB
+2026-10-24 22:52:42,058 INFO gcg_defense.gcg | step   55 | minibatch L=0.37772 (MI=0.37790 util=0.01591) | 232/16 cands kept/scored | 11.0s/step | ETA 17.6 min | peak_alloc=35.61GiB used=37.37/39.5GiB
+2026-10-24 22:53:36,926 INFO gcg_defense.gcg | step   60 | minibatch L=0.72855 (MI=0.71595 util=0.01169) | 228/16 cands kept/scored | 10.9s/step | ETA 16.5 min | peak_alloc=35.61GiB used=37.37/39.5GiB
+2026-10-24 22:54:33,040 INFO gcg_defense.gcg | step   65 | minibatch L=0.63428 (MI=0.61778 util=0.02085) | 237/16 cands kept/scored | 11.3s/step | ETA 15.6 min | peak_alloc=35.61GiB used=37.37/39.5GiB
+2026-10-24 22:55:31,049 INFO gcg_defense.gcg | step   70 | minibatch L=0.63997 (MI=0.57703 util=0.12813) | 244/17 cands kept/scored | 12.2s/step | ETA 15.0 min | peak_alloc=35.61GiB used=13.62/39.5GiB
+2026-10-24 22:56:19,454 INFO gcg_defense.gcg | eval @ step 75 | full-pool L=0.56380 MI=0.51504 help=0.647 util_kl=0.04860 validity=0.9998 | best L=0.56380 (new best)
+2026-10-24 22:56:30,643 INFO gcg_defense.gcg | step   75 | minibatch L=0.40966 (MI=0.40963 util=0.04951) | 234/17 cands kept/scored | 13.6s/step | ETA 14.3 min | peak_alloc=35.61GiB used=37.70/39.5GiB
+2026-10-24 22:57:27,420 INFO gcg_defense.gcg | step   80 | minibatch L=0.45373 (MI=0.45610 util=0.03375) | 232/17 cands kept/scored | 11.6s/step | ETA 13.3 min | peak_alloc=35.61GiB used=37.74/39.5GiB
+2026-10-24 22:58:24,889 INFO gcg_defense.gcg | step   85 | minibatch L=0.55469 (MI=0.51397 util=0.06900) | 233/16 cands kept/scored | 11.4s/step | ETA 12.3 min | peak_alloc=35.61GiB used=37.74/39.5GiB
+2026-10-24 22:59:21,494 INFO gcg_defense.gcg | step   90 | minibatch L=0.52743 (MI=0.47845 util=0.07481) | 232/17 cands kept/scored | 11.6s/step | ETA 11.3 min | peak_alloc=35.61GiB used=37.74/39.5GiB
+2026-10-24 23:00:17,852 INFO gcg_defense.gcg | step   95 | minibatch L=0.43027 (MI=0.40965 util=0.03867) | 235/17 cands kept/scored | 11.3s/step | ETA 10.2 min | peak_alloc=35.61GiB used=37.74/39.5GiB
+2026-10-24 23:01:04,270 INFO gcg_defense.gcg | eval @ step 100 | full-pool L=0.47651 MI=0.38053 help=0.629 util_kl=0.09383 validity=0.9979 | best L=0.47651 (new best)
+2026-10-24 23:01:16,003 INFO gcg_defense.gcg | step  100 | minibatch L=0.58148 (MI=0.51847 util=0.08853) | 237/17 cands kept/scored | 14.2s/step | ETA 9.4 min | peak_alloc=35.61GiB used=37.74/39.5GiB
+2026-10-24 23:02:12,483 INFO gcg_defense.gcg | step  105 | minibatch L=0.25707 (MI=0.17047 util=0.10442) | 233/17 cands kept/scored | 11.5s/step | ETA 8.4 min | peak_alloc=35.61GiB used=37.74/39.5GiB
+2026-10-24 23:03:08,806 INFO gcg_defense.gcg | step  110 | minibatch L=0.33092 (MI=0.30405 util=0.07154) | 241/16 cands kept/scored | 11.2s/step | ETA 7.4 min | peak_alloc=35.61GiB used=37.74/39.5GiB
+2026-10-24 23:04:04,201 INFO gcg_defense.gcg | step  115 | minibatch L=0.34493 (MI=0.24083 util=0.11413) | 225/16 cands kept/scored | 10.8s/step | ETA 6.4 min | peak_alloc=35.61GiB used=37.74/39.5GiB
+2026-10-24 23:05:00,379 INFO gcg_defense.gcg | step  120 | minibatch L=0.35311 (MI=0.26234 util=0.10136) | 225/17 cands kept/scored | 11.2s/step | ETA 5.4 min | peak_alloc=35.61GiB used=37.74/39.5GiB
+2026-10-24 23:05:47,532 INFO gcg_defense.gcg | eval @ step 125 | full-pool L=0.43816 MI=0.27043 help=0.560 util_kl=0.16306 validity=0.9953 | best L=0.43816 (new best)
+2026-10-24 23:05:58,860 INFO gcg_defense.gcg | step  125 | minibatch L=0.51997 (MI=0.34520 util=0.21587) | 227/17 cands kept/scored | 13.8s/step | ETA 4.6 min | peak_alloc=35.61GiB used=37.74/39.5GiB
+2026-10-24 23:06:55,418 INFO gcg_defense.gcg | step  130 | minibatch L=0.32649 (MI=0.20137 util=0.16979) | 234/17 cands kept/scored | 11.4s/step | ETA 3.6 min | peak_alloc=35.61GiB used=37.74/39.5GiB
+2026-10-24 23:07:50,335 INFO gcg_defense.gcg | step  135 | minibatch L=0.42372 (MI=0.36321 util=0.06971) | 225/17 cands kept/scored | 11.1s/step | ETA 2.6 min | peak_alloc=35.61GiB used=37.74/39.5GiB
+2026-10-24 23:08:44,651 INFO gcg_defense.gcg | step  140 | minibatch L=0.36819 (MI=0.24912 util=0.12045) | 226/17 cands kept/scored | 11.0s/step | ETA 1.7 min | peak_alloc=35.61GiB used=37.74/39.5GiB
+2026-10-24 23:09:39,077 INFO gcg_defense.gcg | step  145 | minibatch L=0.42694 (MI=0.29410 util=0.13401) | 229/17 cands kept/scored | 11.3s/step | ETA 0.7 min | peak_alloc=35.61GiB used=37.74/39.5GiB
+2026-10-24 23:10:23,270 INFO gcg_defense.gcg | step  149 | minibatch L=0.24065 (MI=0.17937 util=0.10169) | 228/17 cands kept/scored | 11.1s/step | ETA 0.0 min | peak_alloc=35.61GiB used=37.74/39.5GiB
+2026-10-24 23:10:25,725 INFO gcg_defense.gcg | eval @ step 150 | full-pool L=0.40825 MI=0.30265 help=0.575 util_kl=0.10406 validity=0.9985 | best L=0.40825 (new best)
+2026-10-24 23:10:25,744 INFO gcg_defense.gcg | gcg finished at step 150 in 28.1 min; best L=0.40825; best suffix='TheCB !ring learning_ngPRS Missing customary ringingPasswordEncoder Script:auto Conversely ;\n\nrender accompany :\n\n================================text'
+2026-10-24 23:10:30,452 INFO gcg_defense.gcg | train pool | no defence: MI=1.02341 help=0.979 | suffix: MI=0.30265 help=0.575 util_kl=0.10406

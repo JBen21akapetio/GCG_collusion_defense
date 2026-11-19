@@ -18,8 +18,26 @@ model that is ever run forward or backward.
 > **Sprint provenance (Apart AI Collusion Sprint rule).** Every file in this
 > repository was written on **2026-10-24**, after the 2026-10-23 cut-off. The two
 > files that pre-dated it, `GCG.py` (0 bytes) and `llm_modal.py` (3 bytes), were
-> empty stubs and contribute no code; they are left untouched. No code was reused
-> from an earlier project.
+> empty stubs and contributed no code; they were removed in November 2026. No code
+> was reused from an earlier project.
+
+**Companion project.** The same question in an emergent, three-LLM setting (Qwen2.5-32B,
+GLM-4-32B, Mixtral-8x7B with a private channel) is studied in
+[`gcg-collusion-llm-agents`](https://github.com/JBen21akapetio/gcg-collusion-llm-agents).
+
+## Key results (Qwen2.5-1.5B, seed 0)
+
+| | no defence | GCG suffix |
+|---|---|---|
+| model-MI on held-out instructions (nats) | 0.601 | **0.116** (−81 %) |
+| help rate q(f(a_A)) on held-out instructions (chance 0.333) | 0.802 | **0.409** |
+| utility KL on independent prompts (nats) | — | 0.011 |
+
+The suffix generalises to collusion instructions never seen during the search, the
+effect is carried by the token **sequence** (same tokens shuffled: no effect), the
+defence **weakens with model size** (−98 % / −88 % / −70 % at 0.5B / 1.5B / 3B), and
+under greedy decoding it removes the harm (help rate at chance) but only 36 % of the
+dependence. Details and caveats in [Results](#results).
 
 ## Quick start
 
@@ -140,6 +158,8 @@ src/gcg_defense/
   explain.py                the game, the policy and the behaviour, drawn
   io_utils.py               logging, CSV, timers
 notebooks/01_resultats.ipynb  what has been demonstrated so far, with figures
+docs/notes_de_travail/      working notes from the sprint (French): state of play,
+                            two-person workflow, the original brief, theory prompt
 scripts/                    CLI entry points, scripts/modal_app.py (Modal episodes),
                             scripts/estimate_cost.py (benchmark -> cost table)
 tests/                      145 tests (17 of them need a model)
@@ -233,69 +253,81 @@ distinct **first** tokens `['Rock', 'Paper', 'Sc']` are used (reported at every 
 
 ## Results
 
-Full tables for a run are written to `results/<run_id>/report.md` (markdown),
-`summary.txt` (fixed-width) and `metrics.csv` (long format). The evaluation scores
-every method on held-out contexts **and** held-out collusion instructions.
+Versioned runs (small files only; checkpoints of the other runs stay out of git):
+`results/20261024-133052_default_seed0/` (reference run, 1.5B), `..._m05b_seed0` (0.5B),
+`..._m3b_seed0` (3B, two runs), `..._attack2_seed0` (suffix trained on collusion
+instructions 8–12), and `results/collusion_direction.{pt,json}` (layer 16).
+`notebooks/01_resultats.ipynb` re-reads them and draws every figure; it needs no GPU.
 
-### The one completed run
+### Reference run and generalisation
 
-Seed 0, default config, A100, early-stopped at step 450 of 500 (48.6 min, ~$1.80)
-after 6 evaluations without improvement. **Train pool**, closed form:
+Seed 0, default config, A100, early-stopped at step 450 of 500 (48.6 min, ~$1.80).
+98.4 % of the MI drop is reached before step 100, so 150 steps suffice.
 
-| | no defence | GCG suffix | change |
+| | train (seen instructions) | test (5 unseen instructions, new contexts) |
+|---|---|---|
+| model-MI, no defence | 0.636 | 0.601 |
+| model-MI, with suffix | **0.054** (−91 %) | **0.116** (−81 %) |
+| help rate, no defence | 0.824 | 0.802 |
+| help rate, with suffix | 0.362 | 0.409 |
+
+Utility KL on independent prompts: 0.011 nats; validity 0.998.
+
+### Robustness of the suffix (test pool)
+
+| variant | model-MI | help rate |
+|---|---|---|
+| intact suffix | 0.116 | 0.409 |
+| one token deleted / replaced | 0.16–0.20 | 0.47–0.50 |
+| five tokens replaced | 0.50 | 0.75 |
+| **same tokens, shuffled** | **0.64** | 0.84 |
+| random suffix of the same length | 0.78 | 0.90 |
+| no defence | 0.60 | 0.80 |
+
+The effect is a narrow region of token space, and it is carried by the order of the
+tokens, not by which tokens are present. Noise does not explain it.
+
+### Scaling (150 GCG steps each)
+
+| model | MI, no defence | MI, with suffix | reduction |
 |---|---|---|---|
-| model-MI I(A;B\|context) | 0.636 nats | **0.054 nats** | **−91 %** |
-| help rate q(f(a_A)) | 0.824 | **0.362** | chance is 0.333 |
-| utility KL on independent | — | **0.011 nats** | |
-| validity | 0.9997 | 0.9976 | |
+| Qwen2.5-0.5B | 0.514 | 0.011 | 98 % |
+| Qwen2.5-1.5B | 0.636 | 0.075 | 88 % |
+| Qwen2.5-3B | 1.023 | 0.303 | 70 % |
 
-The optimiser reached MI 0.050 at step 450 and its best total loss at step 300;
-the full trajectory is in `gcg_evals.csv`.
+The 3B model colludes almost perfectly when instructed (help rate 0.979, 93 % of the
+maximum MI), and the defence weakens as capability grows. The 3B run was still
+improving at step 150, so its residual MI is an upper bound.
 
-> **The held-out evaluation has not been run.** Everything below describing
-> baselines, detection rates, certificates and transfer is implemented and
-> tested, but the numbers for this run are not yet measured. Launch it with:
->
-> ```bash
-> modal run scripts/modal_app.py::evaluate --run-id 20261024-133052_default_seed0 \
->     --overrides 'eval.transfer=true' --dry-run     # then without --dry-run
-> ```
->
-> Expect ~35 min on one GPU (~19 min of it CPU-bound permutation testing across
-> 14 methods), so roughly $1.30 on an A100 or $0.70 on an A10G.
+### Out-of-loop checks
 
-A smoke-profile evaluation (20 GCG steps, 16 contexts, 20 games) did run
-end-to-end, and is what the qualitative claims in the next section rest on; its
-absolute numbers are not research-grade.
+- **Free generation** (B writes its answer, 0.9 % unparsable) reproduces the
+  closed-form numbers: 0.65 vs 0.60 nats without defence, 0.15 vs 0.12 with the suffix.
+- **Decoding**: the MI reduction falls from 81 % at temperature 1 to 36 % under greedy
+  decoding (0.960 → 0.610 nats), while the help rate stays near chance (0.906 → 0.380).
+  The suffix removes the *harm* at every temperature, not all the *dependence*: an
+  MI-based detector would still flag the pair under greedy decoding.
 
-### What the comparison shows
+### What is not demonstrated
 
-- **Hand-written anti-collusion instructions do not work.** Three explicit
-  instructions in the defender's slot ("your move must not depend on Player A's
-  move") left model-MI at or slightly *above* the undefended level in the smoke
-  profile. A plainly worded prohibition is not a defence here.
-- **Random suffixes buy nothing.** Five draws of the same length cost several
-  times more utility KL than the optimised suffix while leaving model-MI
-  essentially unchanged, so the GCG result is not "any perturbation degrades
-  the channel". (Smoke-profile magnitudes; the held-out run will pin them.)
-- **The representation baselines under-perform the suffix.** Directional
-  ablation removes some of the dependence; activation steering at 2/4/8 σ is a
-  no-op. The diff-in-means direction separates the two conditions almost
-  perfectly (Cohen's d = 15.8), yet steering along it barely moves the policy —
-  separation is not mediation, and this is the clearest negative result here.
-- **The degenerate solution does not appear.** A constant-move B would score
-  zero MI; the exploitability gap and `constant_move_flag` stay at baseline
-  levels, and B's entropy on independent prompts is unchanged, so the suffix
-  removes the dependence on A rather than collapsing the policy.
+| claim | status |
+|---|---|
+| several seeds / λ sweep | not run (one seed) |
+| behavioural detection in simulated games | implemented, not run at scale |
+| transfer of the suffix across models | not run |
+| cross-evaluation of the two attacker sets | not run (suffix similarity 0.17) |
+| hand-written instructions, random suffixes, steering, ablation | smoke profile only (20 steps) |
+| robustness to an adaptive attacker | outside the current design |
 
-### What is not yet measured
+The collusion here is **instructed and explicit**; A and C are scripted. Emergent
+collusion between LLMs is the subject of the companion project.
 
-- the held-out evaluation of the completed run (command above);
-- the seed and `lambda_util` sweep, so the main figure currently carries
-  SEM-over-contexts error bars rather than over-seeds;
-- transfer to the other three models;
-- any A10G or L4 benchmark, so the GPU choice is not yet settled on
-  steps-per-dollar.
+To complete the evaluation (~35 min, ~$1.30 on an A100):
+
+```bash
+modal run scripts/modal_app.py::evaluate --run-id 20261024-133052_default_seed0 \
+    --overrides 'eval.transfer=true' --dry-run     # then without --dry-run
+```
 
 ## The objective
 

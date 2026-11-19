@@ -1,0 +1,6 @@
+2026-10-24 21:37:57,252 INFO gcg_defense.gcg | move tokens: variant=first_token ids=[35052, 30898, 3326] pieces=['Rock', 'Paper', 'Sc'] (not all move words are single tokens; using distinct first tokens) | run_dir=results/20261024-213639_m3b_seed0
+2026-10-24 21:38:03,280 INFO gcg_defense.model_utils | candidate batch autotuned to 512 (cap 512) | peak_alloc=15.29GiB used=18.61/39.5GiB
+2026-10-24 21:38:04,592 INFO gcg_defense.gcg | device=cuda dtype=torch.bfloat16 candidate_batch=512 | peak_alloc=15.29GiB used=6.52/39.5GiB
+2026-10-24 21:38:15,178 INFO gcg_defense.gcg | step    0 | minibatch L=0.69483 (MI=0.94407 util=0.03961) | 200/17 cands kept/scored | 10.6s/step | ETA 26.3 min | peak_alloc=35.23GiB used=12.07/39.5GiB
+2026-10-24 21:38:18,826 WARNING modal-client | Received a cancellation signal while processing input ('in-01M5QXFAJ2J12R9NJ10R74TFXR:1792877767235-0',)
+2026-10-24 21:38:18,832 WARNING modal-client | Successfully canceled input ('in-01M5QXFAJ2J12R9NJ10R74TFXR:1792877767235-0',)
